@@ -1,0 +1,20 @@
+[Unit]
+Description=CertAgent Backend (FastAPI + Uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/certagent
+Environment="PATH=/opt/certagent/venv/bin:/usr/local/bin:/usr/bin"
+ExecStart=/opt/certagent/venv/bin/uvicorn webapi.app:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=5
+
+# 日志
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
