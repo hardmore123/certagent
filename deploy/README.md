@@ -3,9 +3,9 @@
 ## 架构
 
 ```
-浏览器(同事电脑) → Nginx(:80) ─┬─ /           → 前端静态文件(dist/)
-                               ├─ /api/*      → Uvicorn(:8000)
-                               └─ /health     → Uvicorn(:8000)
+浏览器(同事电脑) → Nginx(:8123) ─┬─ /           → 前端静态文件(dist/)
+                                 ├─ /api/*      → Uvicorn(:8125)
+                                 └─ /health     → Uvicorn(:8125)
 ```
 
 ## 前置条件
@@ -92,10 +92,10 @@ sudo systemctl start certagent
 
 ```bash
 # 检查后端
-curl http://localhost:8000/health
+curl http://localhost:8125/health
 
 # 检查 Nginx
-curl http://localhost/api/health
+curl http://localhost:8123/health
 
 # 查看后端日志
 journalctl -u certagent -f

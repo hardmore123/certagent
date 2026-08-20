@@ -36,24 +36,34 @@ class JobRunner:
                 # 解析阶段
                 def _parse():
                     trace.new_run()
-                    # 检测上传文件的实际扩展名
-                    orig_doc = rec.job_dir / "orig.doc"
-                    plm_doc = rec.job_dir / "plm.doc"
+                    # 检测上传文件的实际扩展名（支持 .doc / .docx）
+                    orig_doc = None
+                    plm_doc = None
+                    for f in rec.job_dir.iterdir():
+                        if f.name.startswith("orig"):
+                            orig_doc = f
+                        elif f.name.startswith("plm"):
+                            plm_doc = f
+                    if not orig_doc or not plm_doc:
+                        raise FileNotFoundError(f"上传文件未找到: {list(rec.job_dir.iterdir())}")
                     state = {}
 
-                    # Word COM 必须在 CoInitialize 过的线程里调用
-                    import pythoncom
+                    # Word 文件解析（跨平台）
 
                     def _load_one(path: Path):
                         """按文件类型分派解析，返回 (rows, docx_path)：
                         - JSON fixture（内容以 [ 开头）→ load_rows_json，docx_path=None
                         - 真正的 .docx → python-docx（无 COM），docx_path=原路径
-                        - 老 .doc → 自动转 .docx（LibreOffice/Word 子进程）再解析，docx_path=转换后路径
+                        - 透明加密文件 → 先调解密服务还原，再用 python-docx，docx_path=解密后路径
+                        - 解析失败 → 抛清晰错误，**不再静默返回空 rows**
 
                         docx_path 供 apply 阶段作格式模板（字体/字号/页面/列宽）。
+
+                        注意：服务器不提供 .doc 自动转换。
+                        同事把 .doc 重命名成 .docx（OLE 复合格式伪装）→ python-docx 打开失败 → 立即报错。
+                        必须让用户在 Word 里「文件→另存为 .docx」后再上传。
                         """
                         from compare_core.parser import load_rows_json, parse_docx
-                        from compare_core.parser.converter import ensure_docx
 
                         # 1) JSON fixture
                         try:
@@ -66,12 +76,29 @@ class JobRunner:
                         # 2) 尝试直接当 .docx 解析
                         try:
                             return parse_docx(str(path)), str(path)
-                        except Exception:
-                            pass  # 不是有效 docx
-
-                        # 3) 老 .doc → 自动转换（子进程，不污染主线程）
-                        docx_path = ensure_docx(str(path), work_dir=str(path.parent / "_converted"))
-                        return parse_docx(docx_path), docx_path
+                        except Exception as e:
+                            # 3) 解析失败 → 可能是透明加密文件，先尝试解密再解析
+                            _dec_err = "未尝试"
+                            from compare_core.config import config
+                            if config.DECRYPT_ENABLED:
+                                from compare_core.decrypt import decrypt_file
+                                try:
+                                    dec = decrypt_file(path)
+                                    return parse_docx(str(dec)), str(dec)
+                                except Exception as de:  # noqa: BLE001
+                                    _dec_err = f"{type(de).__name__}: {str(de)[:200]}"
+                            else:
+                                _dec_err = "已关闭（DECRYPT_ENABLED=false）"
+                            # 解密也失败 → 抛清晰错误，不静默
+                            # 让任务 status=failed，同事能立刻看到真实问题
+                            raise RuntimeError(
+                                f"文件 {path.name} 不是合法的 .docx 格式"
+                                f"（{type(e).__name__}: {str(e)[:200]}）。"
+                                "服务器不提供 .doc 自动转换（LibreOffice 7.3 在 systemd 下不可靠）。"
+                                "请用 Word 打开后「文件→另存为 .docx」再上传"
+                                "（注意：是「另存为」产生新的 docx 文件，不是把 .doc 重命名成 .docx）。"
+                                f"（已尝试解密：{_dec_err}）"
+                            )
 
                     state["rows_orig"], _ = _load_one(orig_doc)
                     state["rows_plm"], plm_docx = _load_one(plm_doc)

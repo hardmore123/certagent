@@ -1,6 +1,40 @@
 import { useEffect, useRef, useState } from 'react'
 import { createJob, getResult, listJobs, type AuditReport } from '../lib/api'
 
+/**
+ * 文件头校验（思路 C）：读文件前几个字节判断真实格式
+ * - 真 .docx = ZIP archive，文件头 "PK\x03\x04" = "504B0304"
+ * - 真 .doc  = OLE2 复合文档，文件头 "D0\xCF\x11\xE0" = "D0CF11E0"
+ * - JSON fixture 由后缀判断
+ * - 其它文件头（如透明加密的 .docx，磁盘字节是密文）→ 放行，交给后端解密服务兜底
+ * 避免 .doc 重命名成 .docx 后被前端放过、后端又解析失败
+ */
+async function checkFileFormat(file: File): Promise<{ ok: boolean; format: string; msg?: string }> {
+  const lower = file.name.toLowerCase()
+  // JSON fixture 走后缀判断（不读 magic bytes，避免编码问题）
+  if (lower.endsWith('.json')) {
+    return { ok: true, format: 'json' }
+  }
+  // 读前 8 字节
+  const buf = new Uint8Array(await file.slice(0, 8).arrayBuffer())
+  const hex = Array.from(buf).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join('')
+  // 真 .docx
+  if (hex.startsWith('504B0304') || hex.startsWith('504B0506') || hex.startsWith('504B0708')) {
+    return { ok: true, format: 'docx' }
+  }
+  // 真 .doc（OLE2 复合文档）→ 不允许上传
+  if (hex.startsWith('D0CF11E0')) {
+    return {
+      ok: false,
+      format: 'doc',
+      msg: `检测到这是 .doc 格式（OLE 复合文档），不是 .docx。请用 Word 打开后「文件 → 另存为 .docx」再上传（不要只改后缀名）。`,
+    }
+  }
+  // 其它文件头（透明加密 .docx 的密文字节 / 未知）→ 放行，后端 _load_one 会调解密服务还原；
+  // 若既不是合法 docx 也解不开，后端会抛清晰错误，不会静默产出错误结果。
+  return { ok: true, format: 'encrypted-or-unknown' }
+}
+
 interface Job {
   job_id: string; status: string; stage: string; progress: number;
   file_orig: string; file_plm: string; diff_count: number; error: string;
@@ -63,9 +97,23 @@ export default function WorkspacePage({ onReview }: { onReview: (id: string) => 
     const orig = origRef.current?.files?.[0]
     const plm = plmRef.current?.files?.[0]
     if (!orig || !plm) { setError('请选择两份文件'); return }
+
+    // 思路 C：文件头校验，杜绝 .doc 伪装 .docx
     setUploading(true)
     setError('')
     try {
+      const origCheck = await checkFileFormat(orig)
+      if (!origCheck.ok) {
+        setError(`【原始清单】${orig.name} → ${origCheck.msg}`)
+        setUploading(false)
+        return
+      }
+      const plmCheck = await checkFileFormat(plm)
+      if (!plmCheck.ok) {
+        setError(`【PLM清单】${plm.name} → ${plmCheck.msg}`)
+        setUploading(false)
+        return
+      }
       await createJob(orig, plm, fuzzyLlm)
       await fetchJobs()
     } catch (err: any) {
@@ -89,13 +137,20 @@ export default function WorkspacePage({ onReview }: { onReview: (id: string) => 
       {/* 上传区 */}
       <div style={{ border: '1px dashed #d9d9d9', padding: 20, borderRadius: 8, marginBottom: 24 }}>
         <h4>上传清单</h4>
+        <div style={{
+          background: '#fffbe6', border: '1px solid #ffe58f', borderRadius: 4,
+          padding: '8px 12px', marginBottom: 12, fontSize: 13, color: '#874d00',
+        }}>
+          ⚠️ 服务器暂不支持 <b>.doc</b> 格式自动转换。
+          请先用 Word 打开 → <b>「另存为 .docx」</b> → 再上传。
+        </div>
         <div style={{ marginBottom: 8 }}>
           <label>输入 A（原始清单·人工整理 / 旧版本·变更前）：</label>
-          <input type="file" ref={origRef} accept=".doc,.docx,.json" />
+          <input type="file" ref={origRef} accept=".docx,.json" />
         </div>
         <div style={{ marginBottom: 8 }}>
           <label>输入 B（PLM 导出·新品 / 新版本·变更后）：</label>
-          <input type="file" ref={plmRef} accept=".doc,.docx,.json" />
+          <input type="file" ref={plmRef} accept=".docx,.json" />
         </div>
         <div style={{ marginBottom: 10 }}>
           <label style={{ fontSize: 13, cursor: 'pointer', userSelect: 'none' }}>

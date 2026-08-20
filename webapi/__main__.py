@@ -29,7 +29,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "webapi.app:app",
         host="0.0.0.0",
-        port=8000,
+        port=8125,
         reload=True,
         reload_dirs=[str(_root / "webapi"), str(_root / "compare_core")],
     )
@@ -38,7 +38,7 @@ else:
     uvicorn.run(
         "webapi.app:app",
         host="0.0.0.0",
-        port=8000,
+        port=8125,
         reload=True,
         reload_dirs=[str(_root / "webapi"), str(_root / "compare_core")],
     )

@@ -4,7 +4,7 @@
 # 代码更新: sudo bash deploy.sh update
 set -e
 
-APP_DIR="/opt/certagent"
+APP_DIR="/home/hisense/pro/Gitlab/CertAgent"
 NGINX_CONF="/etc/nginx/sites-available/certagent"
 SYSTEMD_UNIT="/etc/systemd/system/certagent.service"
 SERVER_IP="10.18.87.51"

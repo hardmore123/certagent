@@ -20,6 +20,14 @@ _PROMPT_DIR = Path(__file__).parent / "prompts"
 _PROMPT = (_PROMPT_DIR / "change_summary.txt").read_text(encoding="utf-8")
 _GROUP_PROMPT = (_PROMPT_DIR / "group_summary.txt").read_text(encoding="utf-8")
 
+# LLM 流式响应熔断参数：推理模型（deepseek-v4-flash）思考过程可能很长，
+# 仅保留 wall-clock 总超时硬性截断，避免任务无限卡死。
+_LLM_TOTAL_TIMEOUT = 120.0          # wall-clock 总超时（秒）
+
+
+class _LLMAbort(Exception):
+    """LLM 流式响应熔断（总超时 / 思考量膨胀）：不再重试，直接回退。"""
+
 
 def _repair_json(text: str) -> str:
     """去掉 ```json 围栏、截取第一个 {...}。"""
@@ -167,25 +175,35 @@ class LLMSuggester:
                 resp = requests.post(url, headers=headers, params=params, json=body,
                                      timeout=config.LLM_TIMEOUT, stream=True)
                 resp.raise_for_status()
-                content = _read_sse_stream(resp)
+                content = _read_sse_stream(resp, deadline=time.time() + _LLM_TOTAL_TIMEOUT)
                 if content:
                     return content
                 raise RuntimeError("LLM 流式响应为空")
+            except _LLMAbort as e:
+                # 熔断（总超时/思考量膨胀）说明模型处于异常状态，重试大概率同样异常，直接放弃回退
+                last = e
+                break
             except Exception as e:  # noqa: BLE001
                 last = e
                 time.sleep(3 * (attempt + 1))
         raise RuntimeError(f"LLM 调用失败：{last}")
 
 
-def _read_sse_stream(resp) -> str:
+def _read_sse_stream(resp, deadline: float) -> str:
     """累积 OpenAI 兼容的流式响应内容。
 
     兼容两种返回：
     - SSE 流：逐行 `data: {json}`，取 choices[0].delta.content 累积，遇 [DONE] 结束
     - 非流式 JSON（网关未真正流式时）：整体解析，取 choices[0].message.content
+
+    熔断保护：仅 wall-clock 总超时（超过 deadline 抛 _LLMAbort）。
+    reasoning_content 不再限长——推理模型思考过程长是正常的，宁可等它想完，
+    由 120s 墙钟超时兜底即可。
     """
     parts: list[str] = []
     for line in resp.iter_lines(decode_unicode=True):
+        if time.time() > deadline:
+            raise _LLMAbort(f"LLM 流式响应超过总超时 {_LLM_TOTAL_TIMEOUT:.0f}s")
         if not line:
             continue
         data = line[5:].strip() if line.startswith("data:") else line.strip()
@@ -199,7 +217,8 @@ def _read_sse_stream(resp) -> str:
         if not choices:
             continue
         ch = choices[0]
-        piece = (ch.get("delta") or {}).get("content") or (ch.get("message") or {}).get("content")
+        delta = ch.get("delta") or {}
+        piece = delta.get("content") or (ch.get("message") or {}).get("content")
         if piece:
             parts.append(piece)
     return "".join(parts)

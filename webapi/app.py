@@ -67,14 +67,35 @@ async def create_job(
     user: dict = Depends(get_current_user),
 ):
     rec = registry.create(owner=user["username"])
+
+    # 服务器 LibreOffice 转换在 systemd 环境下不可靠，统一要求 .docx
+    # 用户上传 .doc 时给清晰提示，让他们在 Word 里「另存为 .docx」后再传
+    for label, f in (("原始清单", file_orig), ("PLM清单", file_plm)):
+        if f and f.filename:
+            ext = Path(f.filename).suffix.lower()
+            if ext == ".doc":
+                # 清理刚建的空任务（内存 + 磁盘）
+                import shutil as _sh
+                registry._jobs.pop(rec.job_id, None)
+                _sh.rmtree(rec.job_dir, ignore_errors=True)
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"【{label}】文件 {f.filename} 是 .doc 格式，服务器暂不支持自动转换。"
+                        "请在 Word 中打开后「另存为 .docx」再上传，几十秒搞定。"
+                    ),
+                )
+
     rec.file_orig = file_orig.filename or "orig"
     rec.file_plm = file_plm.filename or "plm"
     rec.fuzzy_llm = fuzzy_llm
     rec.save()
 
-    # 保存上传文件
-    orig_path = rec.job_dir / "orig.doc"
-    plm_path = rec.job_dir / "plm.doc"
+    # 保存上传文件（保留原始扩展名）
+    orig_ext = Path(file_orig.filename).suffix.lower() if file_orig.filename else ".doc"
+    plm_ext = Path(file_plm.filename).suffix.lower() if file_plm.filename else ".doc"
+    orig_path = rec.job_dir / f"orig{orig_ext}"
+    plm_path = rec.job_dir / f"plm{plm_ext}"
     with open(orig_path, "wb") as f:
         shutil.copyfileobj(file_orig.file, f)
     with open(plm_path, "wb") as f:

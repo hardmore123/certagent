@@ -34,18 +34,56 @@ def _find_libreoffice() -> str | None:
     return None
 
 
-def _convert_via_libreoffice(src: Path, out_dir: Path, soffice: str, timeout: int = 120) -> Path:
-    """用 LibreOffice headless 转换。"""
+def _convert_via_libreoffice(src: Path, out_dir: Path, soffice: str, timeout: int = 60) -> Path:
+    """用 LibreOffice headless 转换。
+
+    关键设计：用 xvfb-run 提供虚拟 X11 display，让 LO 7.3 在 headless + systemd 环境下能正常工作。
+    之前用 SAL_USE_VCLPLUGIN=svp + 显式 profile 都不够，根因是 LO VCL 后端需要 display 句柄。
+    """
+    import os as _os
     out_dir.mkdir(parents=True, exist_ok=True)
-    cmd = [
-        soffice, "--headless", "--norestore", "--convert-to", "docx",
-        "--outdir", str(out_dir), str(src.resolve()),
+    # 固定 profile 路径（预热时已建好）
+    profile_dir = "/home/hisense/.config/libreoffice"
+
+    # 检测 xvfb-run 是否可用，有就用，没有就退化到裸 soffice
+    xvfb_run = shutil.which("xvfb-run")
+    soffice_args = [
+        f"-env:UserInstallation=file://{profile_dir}",
+        "--headless", "--norestore",
+        "--convert-to", "docx",
+        "--outdir", str(out_dir.resolve()),
+        str(src.resolve()),
     ]
-    result = subprocess.run(cmd, capture_output=True, timeout=timeout, text=True)
+    if xvfb_run:
+        # xvfb-run -a 自动找空闲 display 号
+        # --server-args 设虚拟屏幕大小（够用即可）
+        cmd = [xvfb_run, "-a", "--server-args=-screen 0 1024x768x24", soffice] + soffice_args
+    else:
+        # 退化路径：没有 xvfb 时（不应该发生，因为部署指南要求装）
+        cmd = [soffice] + soffice_args
+
+    # 继承父进程环境
+    env = _os.environ.copy()
+    env["LANG"] = "en_US.UTF-8"
+    env["LC_ALL"] = "en_US.UTF-8"
+    env["TMPDIR"] = "/tmp"
+    env["PATH"] = "/usr/local/bin:/usr/bin:/bin:" + env.get("PATH", "")
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, timeout=timeout, text=True, env=env,
+        )
+    except subprocess.TimeoutExpired:
+        # LO 卡死时残留 soffice.bin + Xvfb 进程，强杀以免下次任务继续卡
+        subprocess.run(["pkill", "-9", "-f", "soffice.bin"], capture_output=True)
+        subprocess.run(["pkill", "-9", "-f", "Xvfb"], capture_output=True)
+        raise RuntimeError(
+            f"LibreOffice 转换超时({timeout}s)，已强杀残留进程。"
+            f"profile: {profile_dir}, xvfb: {'有' if xvfb_run else '无'}"
+        )
     target = out_dir / f"{src.stem}.docx"
     if not target.exists():
         raise RuntimeError(
-            f"LibreOffice 转换失败：{result.stderr[:200] or result.stdout[:200]}"
+            f"LibreOffice 转换失败(rc={result.returncode})：{result.stderr[:300] or result.stdout[:300]}"
         )
     return target
 

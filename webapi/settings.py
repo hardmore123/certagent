@@ -10,7 +10,7 @@ class WebSettings:
     JOBS_DIR: Path = Path(os.getenv("JOBS_DIR", str(Path(__file__).resolve().parents[1] / "runs" / "web_jobs")))
     MAX_UPLOAD_MB: int = int(os.getenv("MAX_UPLOAD_MB", "50"))
     MAX_CONCURRENT_JOBS: int = int(os.getenv("MAX_CONCURRENT_JOBS", "2"))
-    CORS_ALLOW_ORIGINS: list[str] = os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:3000").split(",")
+    CORS_ALLOW_ORIGINS: list[str] = os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:8123").split(",")
     # 默认用户（简化版，不需要 users.yaml）
     DEFAULT_USER: str = os.getenv("DEFAULT_USER", "admin")
     DEFAULT_PASSWORD: str = os.getenv("DEFAULT_PASSWORD", "admin123")

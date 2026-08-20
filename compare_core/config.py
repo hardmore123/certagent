@@ -5,8 +5,38 @@ import os
 from pathlib import Path
 
 
+def _load_dotenv(path: Path) -> None:
+    """轻量 .env 加载（不依赖 python-dotenv）：解析 KEY=VALUE 与 # 注释行。
+
+    用 setdefault 语义注入，绝不覆盖进程里已存在的同名环境变量，
+    因此 systemd EnvironmentFile / export 显式设置优先于 .env。
+    """
+    if not path.exists():
+        return
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except Exception:  # noqa: BLE001 - .env 缺失/编码异常不影响启动
+        return
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        key = key.strip()
+        val = val.strip()
+        # 去掉可能的引号包裹（本仓库 .env 未用引号，这里仅兜底）
+        if len(val) >= 2 and val[0] == val[-1] and val[0] in ("'", '"'):
+            val = val[1:-1]
+        if key and key not in os.environ:
+            os.environ[key] = val
+
+
 def _root() -> Path:
     return Path(__file__).resolve().parent
+
+
+# 项目根目录的 .env（compare_core 的上一级）。必须在读取任何 LLM_* / DECRYPT_* 之前加载。
+_load_dotenv(_root().parent / ".env")
 
 
 class Config:
@@ -21,6 +51,12 @@ class Config:
     LLM_USER_KEY = os.getenv("LLM_USER_KEY", "")
     LLM_TIMEOUT = int(os.getenv("LLM_TIMEOUT", "60"))
     LLM_MAX_RETRY = int(os.getenv("LLM_MAX_RETRY", "2"))
+
+    # 内网解密服务（透明加密文件上传后需先解密才能解析）
+    DECRYPT_URL = os.getenv("DECRYPT_URL", "http://10.18.87.51:8500/parse_file")
+    DECRYPT_TIMEOUT = int(os.getenv("DECRYPT_TIMEOUT", "120"))
+    # 解析失败时是否自动调解密服务兜底（解密服务不可用时可置 false）
+    DECRYPT_ENABLED = os.getenv("DECRYPT_ENABLED", "true").strip().lower() != "false"
 
     # 输出是否统一转简体（繁→简）。默认开启，可 OUTPUT_SIMPLIFIED=false 关闭以保留原文
     OUTPUT_SIMPLIFIED = os.getenv("OUTPUT_SIMPLIFIED", "true").strip().lower() != "false"
