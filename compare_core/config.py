@@ -81,7 +81,9 @@ class Config:
 
     RULES_DIR = _root() / "rules" / "data"
     TRACE_DIR = Path(os.getenv("TRACE_DIR", str(_root().parent / "runs")))
-    FEEDBACK_FILE = Path(os.getenv("FEEDBACK_FILE", str(_root().parent / "runs" / "feedback.jsonl")))
+    # 长期记忆落盘路径：放在 git 追踪的 compare_core/memory/data/ 下（而非 runs/ 运行时产物），
+    # 便于随代码进版本库 / 备份，避免服务器清 runs 时记忆丢失。
+    FEEDBACK_FILE = Path(os.getenv("FEEDBACK_FILE", str(_root() / "memory" / "data" / "feedback.jsonl")))
 
 
 config = Config()
