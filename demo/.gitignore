@@ -1,0 +1,30 @@
+# 运行时产物
+runs/
+jobs/
+
+# 敏感配置（含密钥）
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+
+# Word COM 转换缓存
+_converted/
+
+# IDE
+.vscode/
+.idea/
+.kiro/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
