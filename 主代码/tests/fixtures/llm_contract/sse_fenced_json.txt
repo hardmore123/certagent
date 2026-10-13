@@ -1,0 +1,9 @@
+
+data: {"id":"stub-sse","choices":[{"delta":{"role":"assistant"}}]}
+
+data: {"id":"stub-sse","choices":[{"delta":{"reasoning_content":"stub reasoning is not output content"}}]}
+data: {"id":"stub-sse","choices":[{"delta":{"content":"```json\n"}}]}
+data: {"id":"stub-sse","choices":[{"delta":{"content":"{\"changes\":[{\"变更项目\":\"型号\",\"变更前\":\"P-1\",\"变更后\":\"P-2\"}]}"}}]}
+data: {"id":"stub-sse","choices":[{"delta":{"content":"\n```"}}]}
+
+data: [DONE]

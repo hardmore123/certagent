@@ -1,0 +1,5 @@
+
+data: {"id":"stub","choices":[{"delta":{"role":"assistant"}}]}
+data: {"id":"stub","choices":[{"delta":{"reasoning_content":"long thinking that must never be output content"}}]}
+
+data: [DONE]

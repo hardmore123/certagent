@@ -1,0 +1,8 @@
+# 核心依赖（确定性核对 + Web 必需）
+python-docx==1.2.0
+fastapi==0.140.7
+uvicorn==0.51.0
+
+# LLM 可选能力依赖：仅在 REPORT_VERIFY_LLM_MODE != off 时真正用到
+# （report_verify/llm/client.py 延迟导入，未启用 LLM 时不影响确定性流程）
+requests==2.34.2

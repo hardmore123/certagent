@@ -1,0 +1,22 @@
+﻿# 凭据：真实 .env 永不入库；示例文件放行
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# 运行产物（任务输出、临时诊断）
+runs/
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+
+# 编辑器/系统
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+
+data: not-json-at-all
+data: {"id":"stub","choices":[{"delta":{"content":"good "}}]}
+this line has no data prefix and is not json
+data: {"id":"stub","choices":[{"delta":{"content":"chunk"}}]}
+data: [DONE]

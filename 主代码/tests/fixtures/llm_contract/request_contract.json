@@ -1,0 +1,30 @@
+{
+  "base_url": "http://127.0.0.1:8765/v1",
+  "endpoint": "/chat/completions",
+  "api_key": "stub-api-key",
+  "user_key": "stub-user-key",
+  "model": "stub-model",
+  "prompt": "Return the contract fixture.",
+  "timeout_seconds": 7,
+  "expected": {
+    "url": "http://127.0.0.1:8765/v1/chat/completions",
+    "headers": {
+      "Authorization": "Bearer stub-api-key",
+      "Content-Type": "application/json"
+    },
+    "params": {
+      "user_key": "stub-user-key"
+    },
+    "body": {
+      "model": "stub-model",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Return the contract fixture."
+        }
+      ],
+      "temperature": 0,
+      "stream": true
+    }
+  }
+}

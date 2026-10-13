@@ -1,0 +1,14 @@
+{
+  "version": "normalized-v2",
+  "enabled": [
+    "trim_outer_space",
+    "collapse_whitespace",
+    "casefold",
+    "fullwidth_ascii",
+    "wave_dash",
+    "list_separator",
+    "strip_all_space",
+    "placeholder_blank"
+  ],
+  "description": "默认忽略外层空白、连续空白、大小写、全半角、明确等价波浪线，以及把 / 、- 、N/A 等占位符视为空；并把换行、分号、顿号、逗号等列表分隔符视为等价（顺序仍敏感）；并忽略所有内部空白（标准号/型号内部空格视为格式差异）；型号、证书号、规格数值等实质字符差异仍保留。"
+}

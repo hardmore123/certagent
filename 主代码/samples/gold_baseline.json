@@ -1,0 +1,47 @@
+{
+  "version": "2026-09-01-structural-baseline-v2",
+  "status": "structural_baseline_ready_manual_field_labels_pending",
+  "baseline_update": {
+    "date": "2026-09-01",
+    "reason": "对齐当前脱敏样本的实际确定性解析：DRAFT 判定为 safety_list=1、emc_list=1（v1 误记为 safety_list=2、emc_list=0）。经用户确认接受当前样本为新结构基线；仍为机器推断的结构基线，未升级为业务字段金标准。",
+    "previous_draft_blocks": {
+      "safety_list": 2,
+      "emc_list": 0,
+      "change_confirmation": 0,
+      "product_description": 0
+    }
+  },
+  "role_rule": {
+    "draft_prefix": "100",
+    "cert_prefix": "A20"
+  },
+  "expected": {
+    "cert_total_tables": 29,
+    "cert_blocks": {
+      "safety_list": 2,
+      "emc_list": 1,
+      "change_confirmation": 1,
+      "product_description": 1
+    },
+    "draft_total_tables": 2,
+    "draft_blocks": {
+      "safety_list": 1,
+      "emc_list": 1,
+      "change_confirmation": 0,
+      "product_description": 0
+    }
+  },
+  "acceptance_metrics": {
+    "required": [
+      "定位召回率",
+      "字段差异召回率",
+      "误报率",
+      "DRAFT 批注定位成功率"
+    ],
+    "current": "需业务人员对四类子块逐字段标注后计算，不能用字符串命中率替代"
+  },
+  "notes": [
+    "此文件是自动生成的结构基线，不把机器推断当作业务金标准。",
+    "需要人工确认哪些差异属于业务改写、哪些差异属于真实错误后，才能升级为 field_gold_v1。"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "version": "2026-09-01-sample-baseline",
+  "baseline_update": {
+    "date": "2026-09-01",
+    "reason": "以当前脱敏样本的实际确定性解析结果为准更新结构基线：DRAFT 第1表判定为 safety_list、第2表判定为 emc_list（此前基线误记为两张 safety_list、无 emc_list）。经用户确认接受当前样本为新基线。仅记录结构，不作为业务字段金标准。"
+  },
+  "filename_role_rules": {
+    "draft_prefix": "100",
+    "cert_prefix": "A20",
+    "case_sensitive": false
+  },
+  "cert": {
+    "role": "认证资料超集（应然基准）",
+    "path": "data/A2026CCC0808-4944044（00501-CG2026-0353）-P 安全描述+EMC（1.26） (2).docx",
+    "tables": {
+      "safety_list": [7, 20],
+      "emc_list": [28],
+      "change_confirmation": [4],
+      "product_description": [5]
+    },
+    "total_tables": 29
+  },
+  "draft": {
+    "role": "报告草稿（规整清单，批注对象）",
+    "path": "data/_converted/100E7S-PRO(01)_安全&EMC关键件清单 (1).docx",
+    "tables": {
+      "safety_list": [1],
+      "emc_list": [2],
+      "change_confirmation": [],
+      "product_description": []
+    },
+    "total_tables": 2
+  },
+  "notes": [
+    "CERT 表7含重复认证标准列，解析保留重复列，不覆盖主字段。",
+    "CERT 的图片、声明页和其他报告表不参与字段核对，但会进入 unrecognized 元数据（当前 CERT 有 24 张表未命中目标子块指纹）。",
+    "DRAFT 含 safety_list（表1）与 emc_list（表2）；DRAFT 缺少 change_confirmation 与 product_description 子块，相关差异只进入汇总，不伪造批注锚点。"
+  ]
+}

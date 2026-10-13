@@ -1,0 +1,5 @@
+The local provider fixture adds explanatory prose before and after its JSON.
+```json
+{"pairs":[{"orig_index":0,"plm_index":1,"confidence":0.94,"reason":"同表同组的占位候选"}]}
+```
+End of local fixture.

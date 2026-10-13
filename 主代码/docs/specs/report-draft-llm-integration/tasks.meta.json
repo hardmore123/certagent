@@ -1,0 +1,505 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "0.1 编写并运行 CertAgent → ReportVerify 的变量映射/受控凭据注入检查；只验证变量存在性、权限和 diagnostics 脱敏，不读取、打印、复制或持久化真实值。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153576510
+      },
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153605528
+      },
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788154530254
+      }
+    ],
+    "0.2 编写服务器 policy 配置检查：确认 `REPORT_VERIFY_LLM_ALLOW_ORIGINAL_TEXT=true` 的字段白名单策略、`allow_images=false` 固定拒绝、host/TLS allowlist 和任务 mode allowlist 均不能被请求覆盖。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153576933
+      },
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153619684
+      },
+      {
+        "executionId": "9076108f-3974-4ea6-a920-60055684f2a9",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788157036950
+      }
+    ],
+    "0.3 使用本地 stub/占位 fixture 验证 CertAgent 当前 model、endpoint、请求/响应、SSE/JSON 和 repair 契约映射；不访问真实 provider。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577338
+      },
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153632910
+      },
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788154545085
+      }
+    ],
+    "1.1 在 ReportVerify 内新增环境变量配置对象和 CertAgent 凭据映射；保证诊断输出不含 secret。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577411
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788159848108
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788160395564
+      }
+    ],
+    "1.2 实现 endpoint allowlist、TLS、字段白名单、服务器原文策略、图片硬拒绝和提示注入隔离的 policy gate。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577470
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788159849293
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788160396776
+      }
+    ],
+    "1.3 适配 CertAgent 当前的 OpenAI-compatible Bearer/user-key 请求、SSE/JSON 读取、JSON repair、响应上限和 `temperature=0`。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577544
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788160407728
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788160980859
+      }
+    ],
+    "1.4 实现逐次 timeout、有限重试、总墙钟超时不可重试回退，以及 provider 级断路器。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577630
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788160408912
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788161779749
+      }
+    ],
+    "1.5 实现 JSON repair 后的严格 Schema、索引/同表/同组/一对一/枚举/置信度校验。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577827
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788160988714
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788161780900
+      }
+    ],
+    "1.6 实现创建任务的 `llm_mode` 服务器 allowlist 和不可越权校验。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577885
+      },
+      {
+        "executionId": "dfdd6c6b-0cd1-4d6c-85f5-db3568166ecc",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788160989824
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788161782123
+      }
+    ],
+    "2.1 在确定性 `compare_blocks` 之后增加 candidate orchestrator；仅处理残余候选，不改变原始 diff。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153577955
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788161791882
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788162640868
+      }
+    ],
+    "2.2 增加差异解释能力；仅读取既有 `VerifyDiff` 和允许的 CERT/DRAFT 字段原文，输出待展示解释。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578014
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788161798694
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788163924894
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788165369488
+      }
+    ],
+    "2.3 增加专业候选数据结构；未发布规则时保持 `discipline_pending`，不触发路由或审批。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578089
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788161792941
+      },
+      {
+        "executionId": "4117564e-7548-447e-9086-d3dc8701b4f1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788162641270
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788163919845
+      }
+    ],
+    "2.4 为候选接受设计 `accepted_for_recheck` 流程，接受后重跑确定性核对，不直接写最终 verdict。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578240
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788165375945
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225583578
+      }
+    ],
+    "2.5 将 LLM 状态、候选、调用摘要和 warning 写入附属 trace，保持确定性 `verification.json` 字段兼容。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578298
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788165381569
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225596816
+      }
+    ],
+    "3.1 扩展 Job 的可选 LLM 状态和 summary 字段，保持旧 job.json 可恢复。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578363
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225229484
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225621855
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788226247493
+      }
+    ],
+    "3.2 在后台任务中以 `asyncio.to_thread` 调用 orchestrator，并加入独立 provider semaphore。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578448
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225229837
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225634177
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788226262472
+      }
+    ],
+    "3.3 保持现有 API 请求/响应兼容，按策略追加 LLM 字段；实现任务级 `llm_mode` 和受控只读 evidence 接口。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578524
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225230240
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788226294299
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227249295
+      }
+    ],
+    "3.4 保持全量人工确认和最终下载门禁；LLM failure/policy denied 只能产生 review warning。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578621
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225230421
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788226306014
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227262581
+      }
+    ],
+    "3.5 确保反馈记忆只记录人工 verdict，不自动采纳 AI 建议。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578898
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225230554
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788226319610
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227275904
+      }
+    ],
+    "4.1 运行现有 unittest 和真实脱敏样本回归，确认 mode=off 行为无变化。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153578955
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225230674
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227307585
+      },
+      {
+        "executionId": "b40b386c-4983-4ab8-80c9-4b233d523cdb",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788229786870
+      },
+      {
+        "executionId": "b40b386c-4983-4ab8-80c9-4b233d523cdb",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788242481602
+      }
+    ],
+    "4.2 使用本地 stub 覆盖与 CertAgent 当前一致的 SSE、非流式 JSON、model/endpoint/auth contract、凭据映射、429/5xx、鉴权失败、空响应、Schema invalid、总超时和 circuit open。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153579033
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225230874
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227323151
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788228786540
+      }
+    ],
+    "4.3 验证 payload/日志/trace/job/review 不包含 key、Authorization、prompt、response、图片或未授权原文；同时验证已授权字段原文不会进入本地日志/trace。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153579126
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225231091
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227339381
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788228796008
+      }
+    ],
+    "4.4 验证候选守恒、CERT/DRAFT 方向、规则版本和人工下载门禁属性。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153579292
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225231217
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227352763
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788228812209
+      }
+    ],
+    "4.5 在凭据映射、host/TLS、mode allowlist、字段原文策略或图片硬拒绝的验证门禁未通过前保持生产开关关闭；形成回滚为 mode=off 的发布说明。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153579356
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225231338
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788227366245
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788228828332
+      },
+      {
+        "executionId": "b40b386c-4983-4ab8-80c9-4b233d523cdb",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788229779982
+      }
+    ],
+    "4.15 编写原文允许、图片硬拒绝和任务级 mode 越权的策略回归测试。": [
+      {
+        "executionId": "d192df09-06d8-405d-94ae-a72b805e61b1",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788153579415
+      },
+      {
+        "executionId": "1803d309-2c2e-4ee3-9707-f8af0cf11146",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788225231441
+      },
+      {
+        "executionId": "b40b386c-4983-4ab8-80c9-4b233d523cdb",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788242494664
+      },
+      {
+        "executionId": "b40b386c-4983-4ab8-80c9-4b233d523cdb",
+        "chatSessionId": "c9aec216-c4fb-41e6-81ca-000fcfaebc23",
+        "timestamp": 1788242990361
+      }
+    ]
+  }
+}

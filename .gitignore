@@ -1,0 +1,9 @@
+﻿# 运行产物(体积大,不入库)
+runs/
+*.pyc
+__pycache__/
+node_modules/
+.env
+# OS 临时
+Thumbs.db
+*.tmp

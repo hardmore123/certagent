@@ -1,0 +1,1 @@
+{"id":"stub-json","object":"chat.completion","choices":[{"index":0,"message":{"role":"assistant","content":"{\"changes\":[{\"变更项目\":\"认证标准\",\"变更前\":\"GB-1\",\"变更后\":\"GB-2\"}]}"},"finish_reason":"stop"}]}
