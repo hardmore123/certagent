@@ -1,0 +1,37 @@
+{
+  "name": "parser_test0727",
+  "version": "1.0",
+  "root": "..",
+  "cases": {
+    "u66q": {
+      "description": "75U66Q 原报告与 PLM 清单（同基线样例）",
+      "files": [
+        {
+          "id": "orig",
+          "path": "样例/75U66Q(01)_原报告清单--输入.doc",
+          "expected": {"total": 475, "table_1": 438, "table_2": 37}
+        },
+        {
+          "id": "plm",
+          "path": "样例/75U66Q(01)_PLM导出清单-输入.doc",
+          "expected": {"total": 475, "table_1": 438, "table_2": 37}
+        }
+      ]
+    },
+    "toshiba": {
+      "description": "东芝真实差异样例",
+      "files": [
+        {
+          "id": "orig",
+          "path": "AI智能体-认证原始清单与新品清单合并/输入--【原始清单，人工已整理】4720467-85Z970QF(东芝)_安全&EMC关键件清单.doc",
+          "expected": {"total": 159, "table_1": 152, "table_2": 7}
+        },
+        {
+          "id": "plm",
+          "path": "AI智能体-认证原始清单与新品清单合并/输入--【PLM导出清单-新品】85ZXSF(01)(东芝)_安全&EMC关键件清单 - 副本.doc",
+          "expected": {"total": 175, "table_1": 169, "table_2": 6}
+        }
+      ]
+    }
+  }
+}

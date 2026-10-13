@@ -1,0 +1,42 @@
+# 变更-开发 清单整合 · 正向规则（最小集，后续经反馈补充）
+version: 0.1
+
+# 匹配键：判定两侧是否"同一个件"
+match_keys: [关键件名称, 型号]
+
+# 比对字段：匹配上之后，逐字段比对是否有内容差异
+compare_fields: [位号, 规格材料, 制造商, 生产企业, 认证标准, 证书号]
+
+# 型号集合匹配（第 2.5 趟）：型号列常一格罗列多个可选型号，
+# 整格字符串比较会把"型号列表扩充"误判为两侧各自独有。
+# 本策略把型号拆成集合后按集合关系判定，确定性、与书写顺序无关。
+model_set_match:
+  enabled: true            # 是否启用第 2.5 趟
+  separators: "、,;；/／+＋\n\r"   # 型号格内的分隔符（可按业务补充）
+  min_token_len: 2         # 单个型号最短长度（过滤 '/' 等占位符）
+  # 集合关系 → 处理方式
+  #   subset  : 一侧是另一侧真子集（型号列表扩充/收窄）→ 判 CHANGED（语义明确，自动合并）
+  #   overlap : 交集非空但各有独有 → 语义待业务确认，默认仅标为"待确认配对"交人工
+  accept_subset: true
+  accept_overlap: false    # 置 true 则部分重叠也自动配对（需业务确认后再开）
+
+# 归一化开关
+normalize:
+  drop_space: true
+  fullwidth_to_halfwidth: true
+  unify_tilde: true
+
+# 标注规范
+annotate:
+  only_plm:  { color: red, bold: true, source_note: "PLM导出" }
+  changed:   { color: red, bold: true }
+  only_orig: { color: black, bold: false, source_note: "原报告" }
+
+# 对照表变更项分类模板（供 LLM 归纳时参考）
+change_categories:
+  - 增加产品型号规格
+  - 增加机内电源单元备选件
+  - 增加主板备选件
+  - 增加液晶屏备选件
+  - 补充安全&EMC关键件清单中供应商信息
+  - 增加整机外观、内部结构、铭牌等照片

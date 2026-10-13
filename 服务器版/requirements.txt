@@ -1,0 +1,16 @@
+# ── 核心引擎（compare_core，CLI 即可运行）──
+pydantic>=2
+pyyaml>=6
+python-docx>=1.1
+requests>=2.31
+opencc-python-reimplemented>=0.1.7
+pywin32>=306; platform_system=="Windows"     # Word COM 解析/转换（仅 Windows）
+
+# ── 编排层（可选，--engine graph 时需要）──
+langgraph>=0.2
+
+# ── Web 服务（webapi，多人使用时需要）──
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9                        # 文件上传（UploadFile/Form）
+pyjwt>=2.8                                     # 登录 JWT
